@@ -6,7 +6,8 @@ import { start } from "workflow/api";
 
 export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
-  const run = await start(adminChatFlow, [messages]);
+  const today = new Date().toISOString().slice(0, 10);
+  const run = await start(adminChatFlow, [messages, today]);
   return createUIMessageStreamResponse({
     stream: run.readable.pipeThrough(createModelCallToUIChunkTransform()),
     headers: {
