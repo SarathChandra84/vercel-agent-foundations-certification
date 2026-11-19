@@ -14,17 +14,35 @@ export function AgentProductCard({ invocation }: AgentProductCardProps) {
     invocation.state === "input-streaming" ||
     invocation.state === "input-available"
   ) {
-    const idOrSlug = invocation.input?.idOrSlug;
+    const productId = invocation.input?.productId;
     return (
       <div className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
-        Looking up{idOrSlug ? ` "${idOrSlug}"` : ""}…
+        Looking up{productId ? ` "${productId}"` : ""}…
       </div>
     );
   }
 
   if (invocation.state !== "output-available") return null;
 
-  const output = invocation.output;
+  // Shape returned by getProductDetails in lib/tools.ts.
+  const output = invocation.output as
+    | {
+        id: string;
+        name: string;
+        slug: string;
+        description: string;
+        price: number;
+        currency: string;
+        category: string;
+        images: string[];
+        tags: string[];
+        featured: boolean;
+        stock: number;
+        inStock: boolean;
+        lowStock: boolean;
+      }
+    | { error: string }
+    | undefined;
 
   if (!output) return null;
 
@@ -36,16 +54,13 @@ export function AgentProductCard({ invocation }: AgentProductCardProps) {
     );
   }
 
-  const { product, stock } = output;
-  const image = product.images[0];
+  const image = output.images[0];
 
-  const stockText = !stock
-    ? "Stock level unavailable"
-    : !stock.inStock
-      ? "Out of stock"
-      : stock.lowStock
-        ? `Only ${stock.units} left`
-        : "In stock";
+  const stockText = output.inStock === false
+    ? "Out of stock"
+    : output.lowStock
+      ? `Only ${output.stock} left`
+      : "In stock";
 
   return (
     <div className="overflow-hidden rounded-lg border border-border bg-card">
@@ -53,7 +68,7 @@ export function AgentProductCard({ invocation }: AgentProductCardProps) {
         <div className="relative aspect-4/3 bg-secondary">
           <Image
             src={image}
-            alt={product.name}
+            alt={output.name}
             fill
             sizes="(min-width: 768px) 480px, 100vw"
             className="object-cover"
@@ -63,19 +78,19 @@ export function AgentProductCard({ invocation }: AgentProductCardProps) {
       <div className="space-y-3 p-4">
         <div>
           <h3 className="text-base font-semibold leading-tight">
-            {product.name}
+            {output.name}
           </h3>
           <p className="text-sm text-muted-foreground">
-            {formatPrice(product.price, product.currency)}
+            {formatPrice(output.price, output.currency)}
           </p>
         </div>
         <p className="line-clamp-3 text-sm text-muted-foreground">
-          {product.description}
+          {output.description}
         </p>
         <p className="text-sm font-medium">{stockText}</p>
-        {product.tags.length > 0 && (
+        {output.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {product.tags.slice(0, 5).map((tag) => (
+            {output.tags.slice(0, 5).map((tag: string) => (
               <span
                 key={tag}
                 className="rounded-full bg-secondary px-2 py-0.5 text-xs text-muted-foreground"
@@ -86,7 +101,7 @@ export function AgentProductCard({ invocation }: AgentProductCardProps) {
           </div>
         )}
         <Link
-          href={`/products/${product.slug}`}
+          href={`/products/${output.slug}`}
           className="inline-flex text-sm font-medium text-foreground underline-offset-4 hover:underline"
         >
           View product →

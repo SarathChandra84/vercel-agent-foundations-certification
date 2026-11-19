@@ -50,9 +50,9 @@ export function AgentProductList({ invocation }: AgentProductListProps) {
               className="flex items-center gap-3 p-3 transition-colors hover:bg-secondary/50"
             >
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-secondary">
-                {product.images[0] && (
+                {product.image && (
                   <Image
-                    src={product.images[0]}
+                    src={product.image}
                     alt={product.name}
                     fill
                     sizes="56px"
