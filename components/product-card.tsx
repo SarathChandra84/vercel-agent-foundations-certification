@@ -3,8 +3,11 @@ import Image from "next/image"
 import { formatPrice } from "@/lib/format"
 import type { Product } from "@/lib/types"
 
+// Only the fields the card renders, so it also accepts the slimmer listing objects tools return.
+export type ProductCardData = Pick<Product, "id" | "name" | "price" | "currency" | "images">
+
 interface ProductCardProps {
-  product: Product
+  product: ProductCardData
   priority?: boolean
 }
 
