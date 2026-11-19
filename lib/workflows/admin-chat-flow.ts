@@ -59,6 +59,20 @@ export async function adminChatFlow(messages: UIMessage[], today: string) {
       memories
         ? `## Current memories\n\n${memories}`
         : "No memories yet.",
+      "",
+      "## When to save",
+      "Append a line to memories.md when the user shares something that should color future answers:",
+      "- Presentation preferences (percentages vs raw counts, terse vs detailed breakdowns, currency formatting)",
+      "- Business context that's not derivable from the data (which products are seasonal, what 'normal' looks like for a metric, which stakeholder cares about what)",
+      "- Explanations the user has given for past anomalies so you don't re-flag them next time",
+      "- Corrections or feedback the user gave you on a prior answer",
+      "",
+      "Do NOT save routine questions, one-off lookups, or anything you can re-derive from the data tools.",
+      "",
+      "## How to use memory",
+      "Read the current memories above so prior context shapes your reply.",
+      "When you notice the user repeating a question, giving feedback like 'show this as %', or correcting a past answer, append a one-liner to memories.md.",
+      "Don't interview the user. Capture signal opportunistically as it comes up.",
     ].join("\n"),
     tools: {
       bash,
